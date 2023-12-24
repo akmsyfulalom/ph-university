@@ -41,6 +41,7 @@ const userNameZodValidationSchema = z.object({
       permanentAddress: z.string().min(1),
       guardian: guardianZodValidationSchema,
       localGurdian: localGuardianZodValidationSchema,
+      addmissionDepartment: z.string(),
       admissionSemester: z.string(),
       profileImg: z.string().optional(),
 

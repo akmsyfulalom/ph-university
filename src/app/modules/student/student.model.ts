@@ -10,7 +10,6 @@ import {
 import bcrypt from 'bcrypt';
 import config from '../../config';
 
-
 const userNameSchema = new Schema<TUserName>({
   firstName: {
     type: String,
@@ -96,7 +95,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: Schema.Types.ObjectId,
       required: [true, 'User ID is required'],
       unique: true,
-      ref: 'User'
+      ref: 'User',
     },
     name: {
       type: userNameSchema,
@@ -156,9 +155,13 @@ const studentSchema = new Schema<TStudent, StudentModel>(
     profileImg: {
       type: String,
     },
+    addmissionDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicDepartment'
+    },
     admissionSemester: {
       type: Schema.Types.ObjectId,
-      ref: "AcademicSemester"
+      ref: 'AcademicSemester',
     },
     isDeleted: {
       type: Boolean,
@@ -174,11 +177,8 @@ const studentSchema = new Schema<TStudent, StudentModel>(
 
 // virtual
 studentSchema.virtual('fullName').get(function () {
-  return (
-    `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`
-  )
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
-
 
 // query middleware
 studentSchema.pre('find', function (next) {
@@ -195,12 +195,9 @@ studentSchema.pre('aggregate', function (next) {
   next();
 });
 
-
 studentSchema.statics.isUseExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
   return existingUser;
 };
-
-
 
 export const Student = model<TStudent, StudentModel>('Student', studentSchema);
