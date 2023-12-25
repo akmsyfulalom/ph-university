@@ -49,7 +49,30 @@ const userNameZodValidationSchema = z.object({
     })
   })
 
+  const updateStudentZodValidationSchema = z.object({
+    body: z.object({
+      password: z.string().max(20).optional(),
+      student: z.object({
+        name: userNameZodValidationSchema.optional(),
+        gender: z.enum(['male', 'female', 'other']).optional(),
+        dateOfBirth: z.string().optional(),
+        email: z.string().email().optional(),
+        contactNumber: z.string().min(1).optional(),
+        emergencyContactNo: z.string().min(1).optional(),
+        bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'O+', 'O-']).optional(),
+        presentAddress: z.string().min(1).optional(),
+        permanentAddress: z.string().min(1).optional(),
+        guardian: guardianZodValidationSchema.optional(),
+        localGuardian: localGuardianZodValidationSchema.optional(),
+        admissionDepartment: z.string().optional(),
+        admissionSemester: z.string().optional(),
+        profileImg: z.string().optional(),
+      }),
+    })
+  });
 
-  export const StudentZodValidations = {
+
+  export  const StudentZodValidations = {
     createStudentZodValidationSchema,
+    updateStudentZodValidationSchema
   };
