@@ -3,6 +3,7 @@ import { ZodError, ZodIssue } from 'zod';
 import config from '../config';
 import { TErrorSource } from '../interface/error';
 import handleZodError from '../errors/handleZodError';
+import handleValidationError from '../errors/handleValidationError';
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   let statusCode = error.statusCode || 500;
@@ -20,8 +21,12 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
     console.log(simplifiedError);
-  }else if(error.name === 'ValidationError'){
-    console.log('mongoooooose error')
+  }else if(error?.name === 'ValidationError'){
+    const simplifiedError = handleValidationError(error)
+    statusCode = simplifiedError.errorSources,
+    message = simplifiedError.message,
+    errorSources = simplifiedError.errorSources
+
   }
   // ultimate return
   return res.status(statusCode).json({
