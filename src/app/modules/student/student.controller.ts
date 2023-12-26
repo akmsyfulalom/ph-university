@@ -30,8 +30,8 @@ const getSingleStudent = catchAsync(async (req, res, next) => {
 
 const updateStudent = catchAsync(async(req, res, next) =>{
   const {studentId} = req.params;
-  const {student} = req.body
-  const result = await studentServices.updateStudentInToDB(studentId, student)
+  
+  const result = await studentServices.updateStudentInToDB(studentId, req.body)
 
 
   sendResponse(res, {
