@@ -15,6 +15,7 @@ app.use(cors());
 app.use('/api/v1', router)
 
 const test: RequestHandler =(req, res) =>{
+ 
   const a = 10;
   res.status(httpStatus.OK).json({
     data: a
