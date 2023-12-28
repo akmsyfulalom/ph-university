@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import app from './app';
 import config from './app/config';
-import { server } from 'http';
+import { Server } from 'http';
 
-let server: server;
+let server: Server;
 
 async function main() {
   try {
