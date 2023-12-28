@@ -6,18 +6,27 @@ import { User } from '../users/user.model';
 import { TStudent } from './student.interface';
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+  console.log('base quety', query);
+  const queryObj = { ...query };
+  const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
+  let searchTerm = '';
 
-  const studentSearchableFields = ['email', 'name.firstName', 'presentAddress']
-  let  searchTerm = '';
-
-  if(query?.searchTerm){
+  if (query?.searchTerm) {
     searchTerm = query?.searchTerm as string;
   }
-  const result = await Student.find({
-    $or: studentSearchableFields.map((field)=>({
-      [field]: {$regex: searchTerm, $options: 'i'}
-    }))
-  })
+
+  const searchQuery = Student.find({
+    $or: studentSearchableFields.map((field) => ({
+      [field]: { $regex: searchTerm, $options: 'i' },
+    })),
+  });
+
+  // filtering
+  const excludeFields = ['searchTerm', 'sort', 'limit'];
+  excludeFields.forEach((el) => delete queryObj[el]);
+
+  const filterQuery = searchQuery
+    .find(queryObj)
     .populate('admissionSemester')
     .populate({
       path: 'addmissionDepartment',
@@ -26,7 +35,20 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
       },
     });
 
-  return result;
+  let sort = '-createdAt';
+  if (query.sort) {
+    sort = query.sort as string;
+  }
+
+  const sortQuery =  filterQuery.sort(sort);
+
+  let limit = 1;
+  if (query.limit) {
+    limit = query.limit;
+  }
+
+  const limitQuery = await sortQuery.limit(limit);
+  return limitQuery;
 };
 
 const getSingleStudentsFromDB = async (id: string) => {
@@ -69,10 +91,9 @@ const updateStudentInToDB = async (id: string, payload: Partial<TStudent>) => {
 
   console.log(modifiedUpdatedData);
 
-  const result = await Student.findOneAndUpdate(
-    { id },
-     modifiedUpdatedData, 
-     {new: true, runValidators: true,
+  const result = await Student.findOneAndUpdate({ id }, modifiedUpdatedData, {
+    new: true,
+    runValidators: true,
   });
   return result;
 };
